@@ -6,10 +6,18 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // deploy contracts here:
-  
-  
+  const NFT = await ethers.getContractFactory("NFT"); //getContractFactory is used deploy the NFT
+  const nft = await NFT.deploy();
+  const Marketplace = await ethers.getContractFactory("Marketplace");
+  const marketplace = await Marketplace.deploy(1);
+
   // For each contract, pass the deployed contract and name to this function to save a copy of the contract ABI and address to the front end.
-  saveFrontendFiles();
+
+  console.log("NFT contract address is : ", nft.address);
+  console.log("Marketplace contract address is : ", marketplace.address);
+
+  saveFrontendFiles(nft,"NFT");
+  saveFrontendFiles(marketplace,"Marketplace");
 }
 
 function saveFrontendFiles(contract, name) {
@@ -21,14 +29,14 @@ function saveFrontendFiles(contract, name) {
   }
 
   fs.writeFileSync(
-    contractsDir + `/${name}-address.json`,
+    contractsDir + `/${name}-address.json`, //smart contract address is stored here , this datas go to the app.js file i.e. the frontend to read and write data
     JSON.stringify({ address: contract.address }, undefined, 2)
   );
 
   const contractArtifact = artifacts.readArtifactSync(name);
 
   fs.writeFileSync(
-    contractsDir + `/${name}.json`,
+    contractsDir + `/${name}.json`, //smart contract ABI is stored here
     JSON.stringify(contractArtifact, null, 2)
   );
 }
